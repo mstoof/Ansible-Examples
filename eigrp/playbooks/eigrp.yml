@@ -1,0 +1,51 @@
+---
+- name: 'MC: Deploy EIGRP on Cisco IOS'
+  hosts: routers
+  gather_facts: no
+  connection: network_cli
+
+# Er zijn meerdere opties, variables kunnen in de playbook maar dat is niet heel functioneel.
+# Je kunt het ook beleggen in de host_vars, is over het algemeen logischer of je geeft het mee doormiddel van extra-vars
+# in de playbook.
+#  vars:
+#    node_id: 1
+#    outside_interface: g1/0/24
+#    inside_interface: g1/0/1
+#    eigrp_asn: 1
+#  vars_files:
+#    - /vars/external_vars.yml
+  tasks:
+    - name: Outside Interface configuration
+      ios_config:
+        lines:
+          - description Outside-Interface
+          - ip address 145.168.1.{{ node_id }} 255.255.255.252
+          - no shutdown
+        parents: interface {{ outside_interface }}
+
+    - name: Inside Interface Configuration
+      ios_config:
+        lines:
+          - description Inside-Interface
+          - ip address 192.168.1.{{ node_id }} 255.255.255.0
+          - no shutdown
+        parents: interface {{ inside_interface }}
+
+    - name: Router_ID Loopback
+      ios_config:
+        lines:
+          - description Loopback Interface
+          - ip address 1.1.1.{{ node_id }} 255.255.255.255
+        parents: interface Loopback0
+
+    - name: EIGRP Configuration
+      ios_config:
+        lines:
+          - eigrp router-id 1.1.1.{{ node_id }}
+          - network 1.1.1.{{ node_id }} 0.0.0.0
+          - network 145.168.1.{{ node_id }} 0.0.0.255
+          - network 192.168.1.{{ node_id }} 0.0.0.255
+          - passive_interface {{ inside_interface }}
+        parents: router eigrp {{ eigrp_asn }}
+
+...

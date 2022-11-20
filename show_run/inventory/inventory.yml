@@ -1,0 +1,12 @@
+all:
+  children:
+    routers:
+      vars:
+        ansible_connect: ansible.netcommon.network_cli
+        ansible_network_os: cisco.ios.ios
+      hosts:
+        r1.local:
+          ansible_host: 10.1.1.1
+
+    ungrouped: {}
+

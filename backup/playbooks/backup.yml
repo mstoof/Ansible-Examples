@@ -1,0 +1,19 @@
+---
+- name: 'MC: Backup Cisco Configuration locally'
+  hosts: routers
+  gather_facts: no
+  connection: network_cli
+
+  tasks:
+    - name: Show running configuration
+      ios_command:
+        commands:
+          - show run
+      register: config
+
+    - name: Save output to backup inventory
+      copy:
+        content: "{{ config.stdout[0] }}"
+        dest: "../inventory_backups/show_run_{{ inventory_hostname}}.txt"
+
+...

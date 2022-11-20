@@ -1,0 +1,33 @@
+---
+- name: 'MC: Deploy Extended ACLs on Cisco IOS'
+  hosts: routers
+  gather_facts: no
+  connection: network_cli
+
+  tasks:
+    - name: Merge / Create a extended ACL
+      cisco.ios.ios_acls:
+        config:
+          - afi: ipv4
+            acls:
+              - name: test
+                acl_type: extended
+                aces:
+                  - grant: deny
+                    protocol_options:
+                      tcp:
+                        fin: true
+                    source:
+                      address: 192.0.2.0
+                      wildcard_bits: 0.0.0.255
+                    destination:
+                      address: 192.0.3.0
+                      wildcard_bits: 0.0.0.255
+                      port_protocol:
+                        eq: www
+                    option:
+                      traceroute: true
+                    ttl:
+                      eq: 10
+        state: merged
+...
