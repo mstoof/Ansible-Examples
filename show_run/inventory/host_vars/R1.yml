@@ -1,0 +1,7 @@
+---
+ansible_host: 10.1.1.1
+node_id: 1
+mgmt_if: GigabitEthernet0/0
+outside_interface: GigabitEthernet1/0/24
+inside_interface: GigabitEthernet1/0/1
+...

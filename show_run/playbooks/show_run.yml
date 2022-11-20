@@ -1,0 +1,16 @@
+---
+- name: 'MC: Show running configuration'
+  hosts: routers
+  gather_facts: no
+  connection: network_cli
+
+  tasks:
+    - name: Show running configuration
+      ios_command:
+        commands:
+          - show run
+      register: config
+
+    - debug: {{ config }}
+
+...
